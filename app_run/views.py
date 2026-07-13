@@ -1,10 +1,12 @@
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import viewsets, status
-from rest_framework.filters import SearchFilter
-from django.contrib.auth.models import User
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.views import APIView
 
 from .models import Run
@@ -19,11 +21,23 @@ def company_details_view(request):
                'contacts': 'КБшечка у дома'}
     return Response(details)
 
+class RunPagination(PageNumberPagination):
+    page_size_query_param = 'size'
+
+class UserPagination(PageNumberPagination):
+    page_size_query_param = 'size'
+
+
 
 class RunViewSet(viewsets.ModelViewSet):
     queryset = Run.objects.select_related('athlete').all()
     serializer_class = RunSerializer
+    pagination_class = RunPagination
 
+
+    filter_backends = [DjangoFilterBackend, OrderingFilter] # Указываем какой класс будет использоваться для фильтра
+    filterset_fields = ['status', 'athlete'] # Поля, по которым будет происходить фильтрация
+    ordering_fields = ['created_at']
 
 class StartRunView(APIView):
     # def get(self, request):
@@ -55,8 +69,15 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.filter(is_superuser=False)
     serializer_class = UserSerializer
 
-    filter_backends = [SearchFilter] # Подключаем SearchFilter здесь
+
+    pagination_class = UserPagination
+
+
+    filter_backends = [SearchFilter, OrderingFilter] # Подключаем SearchFilter здесь
     search_fields = ['first_name', 'last_name'] # Указываем поля по которым будет вестись поиск
+    ordering_fields = ['date_joined']
+
+
     def get_queryset(self):
         qs = self.queryset
         user_type = self.request.query_params.get('type', None)
