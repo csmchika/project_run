@@ -30,7 +30,7 @@ class StartRunView(APIView):
     #     data = {"message": "GET запрос обработан"}
     #     return Response(data, status=status.HTTP_200_OK)
 
-    def put(self, request, run_id):
+    def post(self, request, run_id):
         run = get_object_or_404(Run, id=run_id)
         if run.status == 'init':
             run.status = 'in_progress'
@@ -43,7 +43,7 @@ class StopRunView(APIView):
     #     data = {"message": "GET запрос обработан"}
     #     return Response(data, status=status.HTTP_200_OK)
 
-    def put(self, request, run_id):
+    def post(self, request, run_id):
         run = get_object_or_404(Run, id=run_id)
         if run.status == 'in_progress':
             run.status = 'finished'
