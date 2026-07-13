@@ -1,3 +1,4 @@
+from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
@@ -81,7 +82,12 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
 
     def get_queryset(self):
-        qs = self.queryset
+        qs = self.queryset.annotate(
+            runs_finished=Count(
+                'runs',
+                filterr=Q(runs__status='finished')
+            )
+        )
         user_type = self.request.query_params.get('type', None)
         if user_type == 'coach':
             qs = qs.filter(is_staff=True)
