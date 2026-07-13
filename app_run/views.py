@@ -66,7 +66,9 @@ class StopRunView(APIView):
         return JsonResponse({"status":f"run with {run_id} not with correct status"}, status=status.HTTP_400_BAD_REQUEST)
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = User.objects.filter(is_superuser=False)
+    queryset = User.objects.filter(is_superuser=False).all()
+
+
     serializer_class = UserSerializer
 
 
