@@ -35,7 +35,7 @@ class StartRunView(APIView):
         if run.status == 'init':
             run.status = 'in_progress'
             run.save()
-            return JsonResponse({"status":f"run with {run_id} in progress"}, status=status.HTTP_202_ACCEPTED)
+            return JsonResponse({"status":f"run with {run_id} in progress"}, status=status.HTTP_200_OK)
         return JsonResponse({"status":f"run with {run_id} not with correct status"}, status=status.HTTP_400_BAD_REQUEST)
 
 class StopRunView(APIView):
@@ -48,7 +48,7 @@ class StopRunView(APIView):
         if run.status == 'in_progress':
             run.status = 'finished'
             run.save()
-            return JsonResponse({"status":f"run with {run_id} finished"}, status=status.HTTP_202_ACCEPTED)
+            return JsonResponse({"status":f"run with {run_id} finished"}, status=status.HTTP_200_OK)
         return JsonResponse({"status":f"run with {run_id} not with correct status"}, status=status.HTTP_400_BAD_REQUEST)
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
